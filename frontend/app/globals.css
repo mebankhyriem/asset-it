@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f9fafb;
+  --foreground: #111827;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@media print {
+  body { background: white; }
+
+  /* Hide sidebar, topnav, nav links, action buttons */
+  aside,
+  header,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Flatten the flex layout so content fills the page */
+  .flex.h-screen {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .flex-1.flex.flex-col {
+    display: block !important;
+    overflow: visible !important;
+  }
+  main {
+    overflow: visible !important;
+  }
+
+  /* Remove card shadows */
+  .shadow-sm { box-shadow: none !important; }
+}

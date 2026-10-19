@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IT Asset Management
 
-## Getting Started
+Next.js application for managing IT assets, assignments, requests, approvals, maintenance, and inventory.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 20 or newer
+- npm
+- MySQL 8 or a compatible managed MySQL service
+- A Node.js host that supports long-running Next.js servers
+
+The application currently serves its own API from Next.js and connects directly to MySQL. The Express service in `backend/` is an early scaffold and is not required to run the application.
+
+## Run locally
+
+From the repository root:
+
+```sh
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a MySQL database and apply the schema:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+mysql -u YOUR_DB_USER -p YOUR_DB_NAME < frontend/lib/db/schema.sql
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `frontend/.env.local` with the connection URL and a unique session signing secret:
 
-## Learn More
+```dotenv
+DATABASE_URL=mysql://YOUR_DB_USER:YOUR_DB_PASSWORD@YOUR_DB_HOST:3306/YOUR_DB_NAME
+SESSION_SECRET=replace-with-a-long-random-secret
+```
 
-To learn more about Next.js, take a look at the following resources:
+Generate a secret with `openssl rand -base64 32`. Keep credentials out of Git and use your host's secret/environment-variable settings in production.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Start the app:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+npm run dev -w frontend
+```
 
-## Deploy on Vercel
+Open <http://localhost:3000>.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy the repository as a Node.js service. Use the repository root as the project directory, `npm run build` as the build command, and `npm run start -w frontend` as the start command. Configure `DATABASE_URL` and `SESSION_SECRET` in the hosting provider, and apply `frontend/lib/db/schema.sql` to the production database before the first launch.
+
+The database schema creates tables only; it does not create an initial administrator. Provision the first account through your organization's trusted database setup process before using the login page. Do not expose a database or seed password in a public repository.
+
+Uploaded documents and photos are stored under `frontend/data/uploads/`. Configure persistent storage for that directory on hosts with ephemeral filesystems, or uploads may be lost when instances restart or redeploy. Back up the database and uploaded files.
+
+## Build
+
+```sh
+npm run build
+npm run lint -w frontend
+```
